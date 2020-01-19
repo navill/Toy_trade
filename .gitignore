@@ -9,6 +9,9 @@ __pycache__/
 local_settings.py
 db.sqlite3
 media
+static_in_env/
+static_root/
+media_root/
 static/
 migrations/
 secret_key.py
