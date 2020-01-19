@@ -10,7 +10,7 @@ urlpatterns = [
     path('auth/', include('allauth.urls')),
     path('accounts/', include('accounts.urls')),
     path('products/', include('products.urls')),
-    path('', Home.as_view()),
+    path('', Home.as_view(), name='home'),
 ]
 
 if settings.DEBUG:
