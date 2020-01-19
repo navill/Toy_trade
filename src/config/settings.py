@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+import temp_key
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -25,6 +26,20 @@ SECRET_KEY = 'w4fu%!^w2)l2%b1^c)k6_=3%2-^8a+8+0ra^i!#3*g+wt+nsf('
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = temp_key.key['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = temp_key.key['EAMIL_HOST_PASSWORD']
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+"""
+from django.conf import settings
+from django.core.mail import send_mail
+send_mail('hi2', 'message', settings.EMAIL_HOST_USER, ['jihoon1493@gmail.com'], fail_silently=False)
+"""
+
 
 # Application definition
 
