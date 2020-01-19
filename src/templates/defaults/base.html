@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    <title>
+        {% block title %}
+        Srvup
+        {% endblock %}
+    </title>
+</head>
+<body>
+<div class="container-fluid">
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+{% include 'scripts.html' %}
+</body>
+</html>

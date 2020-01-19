@@ -1,0 +1,22 @@
+{% extends "home.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<p>{{ object.title }}</p>
+<p>{{ object.price }}</p>
+<p>{{ object.description }}</p>
+{% if object.image %}
+<img src="{{ object.image.url }}">
+{% endif %}
+
+<br><br><br><br>
+{% for comment in comments%}
+
+<p>{{ forloop.counter }} - {{ comment }}({{ comment.created }})</p>
+{% endfor %}
+
+
+{% include 'products/comments/comment_form.html' with product=object %}
+
+{% endblock %}
