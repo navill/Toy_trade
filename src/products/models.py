@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 # Create your models here.
+from django.db.models import Prefetch
 from django.urls import reverse
 
 User = get_user_model()
@@ -10,6 +11,19 @@ BUY_OR_SELL = (
     ('buy', 'Buy'),
     ('sell', 'Sell')
 )
+
+
+class ProductQuerySet(models.QuerySet):
+    def owner(self):
+        return self.select_related('user')
+
+
+class ProductManager(models.Manager):
+    def get_queryset(self):
+        return ProductQuerySet(self.model, using=self._db)
+
+    def all(self):
+        return super(ProductManager, self).all()
 
 
 def handle_upload(instance, filename):
@@ -21,21 +35,18 @@ def handle_upload(instance, filename):
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    price = models.DecimalField(decimal_places=2, max_digits=20)
+    price = models.IntegerField(default=0)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to=handle_upload, blank=True, null=True)
     type = models.CharField(choices=BUY_OR_SELL, default='sell', max_length=5)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
-    # location - session
-    # from writer(session or redis)
-    # sell_or_buy - choice
-    # kw = array(postgresql) or json
+    objects = ProductManager()
 
-    # price - decimal
-    # description - text
-    # image
-    # comment - foreignkey
-    # trade_method - choice
+    class Meta:
+        ordering = ['-created']
+
     def __str__(self):
         return str(self.title)
 
@@ -50,6 +61,9 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', related_name='reply', null=True, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created']
 
     def __str__(self):
         return str(self.product)

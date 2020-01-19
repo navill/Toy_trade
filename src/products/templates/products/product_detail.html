@@ -11,11 +11,13 @@
 {% endif %}
 
 <br><br><br><br>
-{% for comment in comments%}
-
-<p>{{ forloop.counter }} - {{ comment }}({{ comment.created }})</p>
-{% endfor %}
-
+<ul>
+    {% for comment in comments %}
+    <li>
+        <p>{{ comment.comment }}({{ comment.created }})</p>
+    </li>
+    {% endfor %}
+</ul>
 
 {% include 'products/comments/comment_form.html' with product=object %}
 

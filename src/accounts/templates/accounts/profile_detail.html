@@ -1,0 +1,15 @@
+{% extends "home.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<br>
+<br>
+<br>
+<br>
+<p>{{ object.address }}</p>
+
+<a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
+
+
+{% endblock %}

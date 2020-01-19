@@ -23,7 +23,7 @@ class ProductCreateView(CreateView):
 
 
 class ProductListView(ListView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().owner()
     template_name = 'products/product_list.html'
 
 
@@ -41,13 +41,6 @@ class ProductDetailView(DetailView):
         }
         return render(request, 'products/product_detail.html', context=context)
 
-    # def get(self, request, *args, **kwargs):
-    #     pk = kwargs['pk']
-    #     obj = self.get_object()
-    #     print(obj)
-    #     # obj = obj.objects.prefetch_related(
-    #     #     Prefetch('comment_set', queryset=Comment.objects.filter(product__id=pk), to_attr='comments'))
-    #     return obj
 
 
 class ProductUpdateView(UpdateView):

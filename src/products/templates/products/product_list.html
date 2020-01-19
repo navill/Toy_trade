@@ -2,9 +2,12 @@
 
 
 {% block content %}
-
+<ul>
 {% for obj in object_list %}
-    <p>{{ obj }}</p>
+    <li>
+        <p>작성자:{{ obj.user }} - <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a> [가격:{{ obj.price }} 원]</p>
+        <p></p>
+    </li>
 {% endfor %}
-
+</ul>
 {% endblock %}
