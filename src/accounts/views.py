@@ -1,14 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView as DefaultLoginView, LogoutView as DefaultLogoutView
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
 
 # Create your views here.
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.base import View
 
-from accounts.forms import UserProfileForm
+from accounts.forms import UserProfileForm, LoginForm
 from accounts.models import UserProfile
+
+from location.signals import user_logged_in
 
 
 class Home(View):
@@ -35,6 +37,21 @@ class UserProfileDetailView(DetailView):
                 return obj
             raise Http404
         raise Http404
+
+
+class LoginView(DefaultLoginView):
+    form_class = LoginForm
+    template_name = 'account/login.html'
+
+    def form_valid(self, form):
+        form_ = super().form_valid(form)
+        # if self.request.user.is_authenticated:
+        #     user_logged_in.send(self.request.user, request=self.request)
+        return form_
+
+
+class LogoutView(DefaultLogoutView):
+    pass
 
 
 class UserProfileUpdateView(UpdateView):

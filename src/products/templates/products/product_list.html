@@ -2,12 +2,53 @@
 
 
 {% block content %}
-<ul>
-{% for obj in object_list %}
-    <li>
-        <p>작성자:{{ obj.user }} - <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a> [가격:{{ obj.price }} 원]</p>
-        <p></p>
-    </li>
-{% endfor %}
-</ul>
+<div class="row">
+    <div class="col mx-auto">
+        <ul>
+            {% for obj in object_list %}
+            <li>
+                <p>작성자:{{ obj.user }} - <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a> [가격:{{ obj.price }} 원]
+                </p>
+                <p></p>
+            </li>
+            {% endfor %}
+        </ul>
+        <!--<div class="container">-->
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-5 mx-auto">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="{% url 'products:list' %}?page=1">First</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'products:list' %}?page={{ page_obj.previous_page_number }}"><span
+                        aria-hidden="true">&laquo;</span></a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'products:list' %}?page={{ page_obj.previous_page_number }}">
+                    {{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+
+
+                <li class="page-item active" aria-current="page"><a class="page-link" href="#">{{ page_obj.number}}</a>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'products:list' %}?page={{ page_obj.next_page_number }}">
+                    {{ page_obj.next_page_number }}</a>
+                </li>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'products:list' %}?page={{ page_obj.next_page_number }}"><span
+                        aria-hidden="true">&raquo;</span></a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'products:list' %}?page={{ paginator.num_pages }}">Last</a></li>
+
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
 {% endblock %}

@@ -4,10 +4,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from accounts.views import Home
+from accounts.views import Home, LoginView, LogoutView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('allauth.urls')),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('accounts/', include('accounts.urls')),
     path('products/', include('products.urls')),
     path('', Home.as_view(), name='home'),

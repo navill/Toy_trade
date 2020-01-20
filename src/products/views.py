@@ -1,4 +1,3 @@
-from django.db.models import Prefetch
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -25,6 +24,7 @@ class ProductCreateView(CreateView):
 class ProductListView(ListView):
     queryset = Product.objects.all().owner()
     template_name = 'products/product_list.html'
+    paginate_by = 3
 
 
 class ProductDetailView(DetailView):
