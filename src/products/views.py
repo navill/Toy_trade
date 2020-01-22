@@ -1,8 +1,11 @@
+from django.db.models.signals import post_save
 from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
+from location.models import UserSession
+from notification.utils import create_action
 from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
@@ -14,9 +17,10 @@ class ProductCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
+        user = request.user
         if form.is_valid():
             data = form.save(commit=False)
-            data.user = request.user
+            data.user = user
             data.save()
             return redirect(data.get_absolute_url())
 
@@ -39,8 +43,8 @@ class ProductDetailView(DetailView):
             'object': obj,
             'comments': comments,
         }
+        # UserSession.objects.get(session_key=request.session.session_key)
         return render(request, 'products/product_detail.html', context=context)
-
 
 
 class ProductUpdateView(UpdateView):

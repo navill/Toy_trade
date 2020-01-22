@@ -2,14 +2,41 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <br>
+            <br>
+            <p>주소: {{ object.address }}</p>
 
-<br>
-<br>
-<br>
-<br>
-<p>주소: {{ object.address }}</p>
+            <a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
+        </div>
+        <div class="col-6 col-md-offset-2">
+            <h1>Notification</h1>
+            <p>내 글에 달린 댓글</p>
+            <ul>
+                {% for reply in replies %}
+                <li>내 <a href="{{ reply.product.get_absolute_url }}">[{{ reply.product }}]</a> 게시물에 {{ reply.user }}
+                    님이
+                    새로운 댓글을 달았습니다.
+                </li>
+                {% endfor %}
+            </ul>
 
-<a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
+
+            <p>내 업데이트</p>
+            <ul>
+                {% for info in my_info %}
+                <li>{{ info.verb }} - {{ info.created }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+</div>
+</div>
+<br>
+<br>
 
 
 {% endblock %}

@@ -3,7 +3,10 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import Prefetch
+from django.db.models.signals import post_save
 from django.urls import reverse
+
+from notification.utils import create_action
 
 User = get_user_model()
 
@@ -54,6 +57,15 @@ class Product(models.Model):
         return reverse('products:detail', kwargs={'pk': self.id})
 
 
+def post_save_product_receiver(sender, instance, created, *args, **kwargs):
+    user = instance.user
+    message = f'{user}가 게시물을 작성하였습니다 - {instance.title}'
+    create_action(user=user, verb=message, obj=instance)
+
+
+post_save.connect(post_save_product_receiver, sender=Product)
+
+
 class Comment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -67,3 +79,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.product)
+
+
+def post_save_comment_receiver(sender, instance, created, *args, **kwargs):
+    user = instance.user
+    message = f'{user}가 게시물{instance.product}에 대한 댓글을 작성하였습니다'
+    create_action(user, message, instance)
+
+
+post_save.connect(post_save_comment_receiver, sender=Comment)

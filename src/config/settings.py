@@ -25,7 +25,6 @@ SECRET_KEY = 'w4fu%!^w2)l2%b1^c)k6_=3%2-^8a+8+0ra^i!#3*g+wt+nsf('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
 ALLOWED_HOSTS = ['*']
 
 # # Email
@@ -79,6 +78,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+AUTH_USER_MODEL = 'auth.User'
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = False
 # ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
@@ -231,6 +231,7 @@ if not DEBUG:
     MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
 else:
     from .secret import key
+
     AWS_ACCESS_KEY_ID = key['AWS_ACCESS_KEY_ID']
     AWS_SECRET_ACCESS_KEY = key['AWS_SECRET_ACCESS_KEY']
     AWS_REGION = 'ap-northeast-2'

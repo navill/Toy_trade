@@ -377,6 +377,7 @@ temp_key.py
 s3_upload.py
 temp.py
 requirements.txt
-naver_geolocation.py
+src/naver_geolocation.py
 naver_2.py
 src/config/secret.py
+src/secret.py

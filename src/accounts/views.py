@@ -11,6 +11,8 @@ from accounts.forms import UserProfileForm, LoginForm
 from accounts.models import UserProfile
 
 from location.signals import user_logged_in
+from notification.models import Action
+from products.models import Product, Comment
 
 
 class Home(View):
@@ -38,6 +40,25 @@ class UserProfileDetailView(DetailView):
             raise Http404
         raise Http404
 
+    def get(self, request, *args, **kwargs):
+        # 내 게시물을 제외한 모든 게시물 등록 확인
+        # actions = Action.objects.exclude(user=request.user).by_model(Product)
+        # print(actions)  # -> 나를 제외한 사람들이 생성한 Product objects
+
+        # 내 게시글에 대해 누군가가 댓글 등록
+        qs = Action.objects.all()
+        replies = qs.exclude(user=request.user).by_model(Comment, model_queryset=True).select_related('product')
+
+        # 내 정보 업데이트
+        my_info = qs.filter(user=request.user).by_model(UserProfile)[:4]
+
+        context = {
+            'object': self.get_object(),
+            'my_info': my_info,
+            'replies': replies,
+        }
+        return render(request, 'accounts/profile_detail.html', context=context)
+
 
 class LoginView(DefaultLoginView):
     form_class = LoginForm
@@ -45,8 +66,9 @@ class LoginView(DefaultLoginView):
 
     def form_valid(self, form):
         form_ = super().form_valid(form)
-        # if self.request.user.is_authenticated:
-        #     user_logged_in.send(self.request.user, request=self.request)
+        if self.request.user.is_authenticated:
+            user_logged_in.send(self.request.user, request=self.request)
+            # print(self.request.session.items())
         return form_
 
 
@@ -60,8 +82,6 @@ class UserProfileUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         username = self.kwargs.get('username')
-
-        print(username)
         # 인증 확인
         if self.request.user.is_authenticated:
             user = self.request.user
@@ -70,6 +90,7 @@ class UserProfileUpdateView(UpdateView):
                 qs = UserProfile.objects.filter(user=user)
                 if qs.exists():
                     obj = qs.first()
+
                     return obj
                 else:
                     raise Http404
@@ -78,3 +99,8 @@ class UserProfileUpdateView(UpdateView):
     def get_success_url(self):
         user = self.request.user
         return reverse("accounts:detail", kwargs={'username': user})
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.save()
+        return super().post(request, *args, **kwargs)
