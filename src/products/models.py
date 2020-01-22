@@ -17,7 +17,7 @@ BUY_OR_SELL = (
 
 
 class ProductQuerySet(models.QuerySet):
-    def owner(self):
+    def with_user(self):
         return self.select_related('user')
 
 

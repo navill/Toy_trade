@@ -1,12 +1,8 @@
-from django.db.models import Prefetch
-from django.db.models.signals import post_save
 from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
-from location.models import UserSession
-from notification.utils import create_action
 from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
@@ -27,7 +23,7 @@ class ProductCreateView(CreateView):
 
 
 class ProductListView(ListView):
-    queryset = Product.objects.all().owner()
+    queryset = Product.objects.all().with_user()
     template_name = 'products/product_list.html'
     paginate_by = 3
 
@@ -38,16 +34,14 @@ class ProductDetailView(DetailView):
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('pk')
-        # obj = Product.objects.prefetch_related(
-        #     Prefetch('comment_set', queryset=Comment.objects.filter(product_id=pk))).owner().get(id=pk)
-        # print(obj.comment_set.all())
-        obj = Product.objects.filter(id=pk).owner()
+        obj = Product.objects.filter(id=pk).with_user()  # Product(35) + user(1)
         return obj.first()
 
     def get(self, request, *args, **kwargs):
-        # comments = Comment.objects.prefetch_related('product')  # .filter(product=obj)
+        # 필요한 모델 product with user, comment with user
+        # 두 모델의 user 정보가 다르기 때문에 각각 select, prefetch 사용
         obj = self.get_object()
-        comments = obj.comment_set.all().select_related('user')
+        comments = obj.comment_set.all().select_related('user')  # comment(id:4,id:5) + user(id:1, id:2)
 
         # 템플릿에 전달되어야 하는 값: product_obj, comments,
         context = {

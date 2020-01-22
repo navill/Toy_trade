@@ -11,7 +11,7 @@ User = get_user_model()
 
 
 class UserProfileManager(models.Manager):
-    def user(self):
+    def with_user(self):
         return self.select_related('user')
 
     def all(self):

@@ -5,14 +5,15 @@
     <title>{% block head_title %}{% endblock %}</title>
     {% block extra_head %}
     {% endblock %}
+
 </head>
 <body>
 
 {% include 'defaults/navbar.html' %}
 <div class="container">
-<div class="row">
+    <div class="row">
 
-    <div class="col-10 mx-auto">
+        <div class="col-10 mx-auto">
             {% block content %}
 
             {% endblock %}
@@ -20,5 +21,9 @@
     </div>
 </div>
 {% include 'defaults/scripts.html' %}
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHNILezgWNhRf_gv4qVF6U_OlkcJT1v0o&callback=initMap">
+</script>
+
 </body>
 </html>

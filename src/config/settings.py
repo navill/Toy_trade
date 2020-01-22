@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from .secret import key
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
@@ -21,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'w4fu%!^w2)l2%b1^c)k6_=3%2-^8a+8+0ra^i!#3*g+wt+nsf('
+GOOGLE_MAPS_API_KEY = key['GOOGLE_MAPS_API_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -230,8 +232,6 @@ if not DEBUG:
     STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
     MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
 else:
-    from .secret import key
-
     AWS_ACCESS_KEY_ID = key['AWS_ACCESS_KEY_ID']
     AWS_SECRET_ACCESS_KEY = key['AWS_SECRET_ACCESS_KEY']
     AWS_REGION = 'ap-northeast-2'

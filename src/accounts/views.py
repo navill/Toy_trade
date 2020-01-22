@@ -35,7 +35,7 @@ class UserProfileDetailView(DetailView):
             # 접근자와 프로필 유저가 동일한지 확인
             if username == user.username:
                 # qs = UserProfile.objects.filter(user=user).user()
-                obj, created = UserProfile.objects.user().get_or_create(user=user)
+                obj, created = UserProfile.objects.with_user().get_or_create(user=user)
                 return obj
             raise Http404
         raise Http404
@@ -52,10 +52,14 @@ class UserProfileDetailView(DetailView):
         # 내 정보 업데이트
         my_info = qs.filter(user=request.user).by_model(UserProfile)[:4]
 
+        # 내 위치 정보
+        # {lat: -25.344, lng: 131.036};
+        coordinates = '{lat: -25.344, lng: 131.036}'
         context = {
             'object': self.get_object(),
             'my_info': my_info,
             'replies': replies,
+            'coordinates': coordinates,
         }
         return render(request, 'accounts/profile_detail.html', context=context)
 

@@ -9,8 +9,9 @@
 <body>
 
 <div class="container">
-    <div class="row">
-        <div class="col-6 mx-auto">
+<div class="row">
+
+    <div class="col-6 mx-auto">
             {% block body %}
 
             {% if messages %}
@@ -43,8 +44,8 @@
 
             {% endblock %}
         </div>
-        {% block extra_body %}
-        {% endblock %}
+{% block extra_body %}
+{% endblock %}
     </div>
 </div>
 {% include 'defaults/scripts.html' %}
