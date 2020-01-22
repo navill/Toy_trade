@@ -2,6 +2,7 @@ import requests
 import json
 from naver_geolocation import get_address
 
+
 def get_client_ip():
     ip = requests.get('http://ip.jsontest.com')
     ip = json.loads(ip.text)['ip']

@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from django.db.models.signals import post_save
 from django.shortcuts import render, redirect
 
@@ -35,9 +36,19 @@ class ProductDetailView(DetailView):
     queryset = Product.objects.all()
     template_name = 'products/product_detail.html'
 
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('pk')
+        # obj = Product.objects.prefetch_related(
+        #     Prefetch('comment_set', queryset=Comment.objects.filter(product_id=pk))).owner().get(id=pk)
+        # print(obj.comment_set.all())
+        obj = Product.objects.filter(id=pk).owner()
+        return obj.first()
+
     def get(self, request, *args, **kwargs):
+        # comments = Comment.objects.prefetch_related('product')  # .filter(product=obj)
         obj = self.get_object()
-        comments = Comment.objects.prefetch_related('product').filter(product=obj)
+        comments = obj.comment_set.all().select_related('user')
+
         # 템플릿에 전달되어야 하는 값: product_obj, comments,
         context = {
             'object': obj,
@@ -69,6 +80,7 @@ class CommentCreateView(CreateView):
         if form.is_valid():
             data = form.save(commit=False)
             data.user = request.user
+            # data.city = 'none'
             product = Product.objects.get(id=form.data['product'])
             data.product = product
             data.save()
