@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+<div id="map">
+
+</div>
+
+<script>
+
+var origin1 = new google.maps.LatLng(55.930385, -3.118425);
+var origin2 = 'Greenwich, England';
+var destinationA = 'Stockholm, Sweden';
+var destinationB = new google.maps.LatLng(50.087692, 14.421150);
+
+
+// 멀티 마커(거리 표시를 위한) 지도 셋팅
+var service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+    {
+      origins: [{'lat': 37.546892, 'lng': 127.103025}, 'hollys'],
+      destinations: ['hollys +2 ', {'lat': 37.546894, 'lng': 127.103027}],
+      travelMode: 'DRIVING',
+      drivingOptions: {
+        departureTime: new Date(Date.now() + N),  // for the time N milliseconds from now.
+        trafficModel: 'optimistic'
+        }
+    }, callback);
+
+// 지도 표시를 위한 초기화
+function initMap() {
+    var uluru = {'lat': 37.546892, 'lng': 127.103025};
+    var map = new google.maps.Map(
+    document.getElementById('map'), {zoom: 15, center: uluru});
+    var marker = new google.maps.Marker({position: uluru, map: map});
+}
+
+// 결과 데이터 처리 callback
+function callback(response, status) {
+  if (status == 'OK') {
+    var origins = response.originAddresses;
+    var destinations = response.destinationAddresses;
+
+    for (var i = 0; i < origins.length; i++) {
+      var results = response.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        var element = results[j];
+        var distance = element.distance.text;
+        var duration = element.duration.text;
+        var from = origins[i];
+        var to = destinations[j];
+      }
+    }
+  }
+}
+
+
+
+</script>
+</body>
+</html>
