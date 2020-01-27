@@ -6,11 +6,13 @@ from accounts.models import UserProfile
 
 class UserProfileForm(forms.ModelForm):
     address = forms.CharField(max_length=150)
+    city = forms.CharField(max_length=150)
+    filtered_city = forms.BooleanField(required=False)
 
     class Meta:
         model = UserProfile
         fields = [
-            'address'
+            'address', 'city', 'filtered_city'
         ]
 
 

@@ -38,10 +38,10 @@ class ProductDetailView(DetailView):
         return obj.first()
 
     def get(self, request, *args, **kwargs):
-        # 필요한 모델 product with user, comment with user
+        # 필요한 모델 Product with User, Comment with User
         # 두 모델의 user 정보가 다르기 때문에 각각 select, prefetch 사용
         obj = self.get_object()
-        comments = obj.comment_set.all().select_related('user')  # comment(id:4,id:5) + user(id:1, id:2)
+        comments = obj.comment_set.all().select_related('user__userprofile')  # comment(id:4,id:5) + user(id:1, id:2)
 
         # 템플릿에 전달되어야 하는 값: product_obj, comments,
         context = {

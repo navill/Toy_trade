@@ -8,7 +8,6 @@
         height: 400px;  /* The height is 400 pixels */
         width: 100%;  /* The width is the width of the web page */
        }
-
 </style>
 <div class="container">
     <div class="row">
@@ -16,12 +15,17 @@
             <br>
             <br>
             <p>주소: {{ object.address }}</p>
+            <p>city: {{ object.city }}</p>
 
             <a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
         </div>
         <div class="col-6 col-md-offset-2">
             <h1>Notification</h1>
+            {% if object.filtered_city %}
+            <p>주변 이웃의 댓글 - [{{object.city}}]</p>
+            {% else %}
             <p>내 글에 달린 댓글</p>
+            {% endif %}
             <ul>
                 {% for reply in replies %}
                 <li>내 <a href="{{ reply.product.get_absolute_url }}">[{{ reply.product }}]</a> 게시물에 {{ reply.user }}
@@ -30,6 +34,7 @@
                 </li>
                 {% endfor %}
             </ul>
+
 
 
             <p>내 업데이트</p>
@@ -45,7 +50,7 @@
 </div>
 <br>
 <br>
-<h3>내 위치</h3>
+<h3>내 접속 위치</h3>
 <!--The div element for the map -->
 <div id="map">
 
@@ -55,6 +60,7 @@
 function initMap() {
   // The location of Uluru
   var uluru = {lat: 37.511571, lng: 127.028461};
+  var uluru2 = {lat: 37.521570, lng: 127.048460};
   // The map, centered at Uluru
   var map = new google.maps.Map(
       document.getElementById('map'), {zoom: 15, center: uluru});
@@ -62,7 +68,9 @@ function initMap() {
 
 
     var marker = new google.maps.Marker({position: uluru, map: map});
+    var marker2 = new google.maps.Marker({position: uluru2, map: map});
 }
+
 </script>
 
 {% endblock %}

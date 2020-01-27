@@ -21,9 +21,11 @@ class UserProfileManager(models.Manager):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    filtered_city = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
+    
     objects = UserProfileManager()
 
     def __str__(self):

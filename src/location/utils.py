@@ -12,5 +12,4 @@ def get_client_ip():
 def get_client_city_data(ip_address):
     # public ip 획득
     user_address = get_address(ip_address)
-
     return user_address

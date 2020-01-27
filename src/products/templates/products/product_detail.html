@@ -17,7 +17,7 @@
 <ul>
     {% for comment in comments %}
     <li>
-        <p>{{ comment.user}} - {{ comment.comment }}({{ comment.created }})</p>
+        <p>{{ comment.user}} - {{ comment.comment }}({{ comment.created }} - {{ comment.user.userprofile.city }})</p>
     </li>
     {% endfor %}
 </ul>

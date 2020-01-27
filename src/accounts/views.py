@@ -47,8 +47,16 @@ class UserProfileDetailView(DetailView):
 
         # 내 게시글에 대해 누군가가 댓글 등록
         qs = Action.objects.all()
-        replies = qs.exclude(user=request.user).by_model(Comment, model_queryset=True).select_related('product')
+        user = request.user
+        reply_qs = qs.exclude(user=user).by_model(Comment, model_queryset=True).select_related('product').filter(
+            product__user=user)
+        user_profile = self.get_object()
 
+        # 내 위치와 동일한 유저의 댓글
+        if user_profile.filtered_city:
+            replies = reply_qs.filter(user__userprofile__city=user.userprofile.city)
+        else:
+            replies = reply_qs
         # 내 정보 업데이트
         my_info = qs.filter(user=request.user).by_model(UserProfile)[:4]
 

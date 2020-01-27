@@ -34,12 +34,13 @@ def user_logged_in_receiver(sender, request, *args, **kwargs):
     if ip_address:
         try:
             city_data = get_client_city_data(ip_address)
-            city = str(city_data['r2']) + ' ' + str(city_data['r3'])
+            # city = str(city_data['r2']) + ' ' + str(city_data['r3'])
+            city = str(city_data['r3'])
         except:
             city_data = None
     request.session['city'] = city
     session_key = request.session.session_key
-    print(session_key)
+    # print(session_key)
     # public ip-address 수집 -> citi data 수집 -> UserSession 생성
     usersession = UserSession.objects.filter(user=user, ip_address=ip_address,
                                              country=city_data['country'],
