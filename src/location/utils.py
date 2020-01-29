@@ -1,15 +1,23 @@
 import requests
 import json
-from naver_geolocation import get_address
 
 
 def get_client_ip():
-    ip = requests.get('http://ip.jsontest.com')
+    # test ip_address - 역삼동
+    # ip_address = '27.1.185.30'
+    # test ip_address - 논현동
+    ip_address = '27.1.175.30'
+
+    ip = requests.get('https://api.ip.pe.kr/json/')
     ip = json.loads(ip.text)['ip']
-    return ip
+
+    return ip_address  # 논현동
 
 
-def get_client_city_data(ip_address):
-    # public ip 획득
-    user_address = get_address(ip_address)
-    return user_address
+# def get_client_city_data(ip_address):
+#     # public ip 획득
+#     user_address = get_address(ip_address)
+#     return user_address
+
+
+# print(get_client_ip())
