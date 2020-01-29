@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 # Create your models here.
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -44,8 +45,14 @@ class Action(models.Model):
     # GenericForeignKey에 대한 db는 생성하지 않는다.
     content_object = GenericForeignKey('content_type', 'object_id')
     check = models.BooleanField(default=False)
-    
+
     objects = ActionManager()
 
     class Meta:
         ordering = ['-created']
+
+    def get_absolute_url(self):
+        # 구현에 따라 조건문 필요 + query 정리
+        # userprofile -> url: /<username>
+        # product, comment -> url: /detail/<id>
+        return self.content_object.get_absolute_url()

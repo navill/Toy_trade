@@ -83,6 +83,9 @@ class Comment(models.Model):
     def __str__(self):
         return str(self.id)
 
+    def get_absolute_url(self):
+        return reverse('products:detail', kwargs={'pk': self.product.id})
+
 
 def post_save_comment_receiver(sender, instance, created, *args, **kwargs):
     user = instance.user
