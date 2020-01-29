@@ -3,17 +3,32 @@
 {% block content %}
 
 <div class="container">
-    <div class="row">
-        <div class="col-6 mx-auto">
-            {{ request.user }}
+	<div class="row">
+		<div class="col-6 mx-auto">
+			{{ request.user }}
 
-            <form method='post' action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button class="btn btn-warning" type="submit">Logout</button>
-            </form>
-            <a href="{% url 'login' %}">login</a>
-        </div>
-    </div>
+			<form method='post' action="{% url 'logout' %}">
+				{% csrf_token %}
+				<button class="btn btn-warning" type="submit">Logout</button>
+			</form>
+			<a href="{% url 'login' %}">login</a>
+		</div>
+	</div>
 </div>
 
+
+{% if comment_actions %}
+<form action="." method="post">
+	{% csrf_token %}
+	{% for action in comment_actions %}
+		<p>{{ action.verb | safe }} - {{ action.created }}</p>
+	{% endfor %}
+	<input type='hidden' name='actions' value='{{ comment_actions }}'/>
+	<input type='hidden' name='check' value='True'/>
+	<input type="submit" value="확인" class="btn btn-primary">
+</form>
+
+{% else %}
+<p>새로운 알림이 없습니다.</p>
+{% endif %}
 {% endblock %}

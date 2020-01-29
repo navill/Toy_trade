@@ -1,4 +1,8 @@
+import json
+import ast
 from django.contrib.auth.views import LoginView as DefaultLoginView, LogoutView as DefaultLogoutView
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect, resolve_url
 
@@ -9,19 +13,50 @@ from django.views.generic.base import View
 
 from accounts.forms import UserProfileForm, LoginForm
 from accounts.models import UserProfile
+from location.models import UserSession
 
 from location.signals import user_logged_in
+from location.utils import get_client_ip
 from notification.models import Action
 from products.models import Product, Comment
 
 
 class Home(View):
-    def get(self, request):
+    action_qs = Action.objects.filter(check=False)
+    temp_value = None
+
+    def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            print(True)
-            return render(request, 'home.html')
+            # 내 게시글에 대해 누군가가 댓글 작성 시 알림
+            queryset = self.action_qs
+            user = request.user
+            # 나를 제외하고 내가 쓴 게시글의 모든 댓글
+            comments = Comment.objects.exclude(user=user).filter(product__user=user)
+            ids = [c.id for c in comments]
+            # 앞에서 필터링된 모든 Comment의 Action
+            comment_actions = queryset.by_model(Comment)
+            comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
+
+            self.temp_value = 'a'
+            context = {
+                'comment_actions': comment_actions
+            }
+            return render(request, 'home.html', context=context)
         else:
-            return redirect('account_login')
+            return redirect('login')
+
+    def post(self, request, *args, **kwargs):
+        is_checked = request.POST.get('check')
+        # print(is_checked)  -> True
+        actions_from_templates = request.POST.get('actions')
+
+        print('post actions: ', actions_from_templates)
+        if is_checked:
+            actions = self.action_qs.by_model(Comment)
+            for action in actions:
+                action.check = True
+            Action.objects.bulk_update(actions, ['check'])
+        return redirect('home')
 
 
 class UserProfileDetailView(DetailView):
@@ -57,12 +92,17 @@ class UserProfileDetailView(DetailView):
             replies = reply_qs.filter(user__userprofile__city=user.userprofile.city)
         else:
             replies = reply_qs
-        # 내 정보 업데이트
+        # 프로필 업데이트 정보
         my_info = qs.filter(user=request.user).by_model(UserProfile)[:4]
 
         # 내 위치 정보
-        # {lat: -25.344, lng: 131.036};
-        coordinates = '{lat: -25.344, lng: 131.036}'
+        ip = get_client_ip()
+        user_session = UserSession.objects.filter(Q(user=user) & Q(ip_address=ip)).first()
+        coord = ast.literal_eval(user_session.city_data)
+        lat = coord['lat']
+        lng = coord['long']
+
+        coordinates = f'lat: {lat}, lng: {lng}'
         context = {
             'object': self.get_object(),
             'my_info': my_info,

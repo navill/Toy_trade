@@ -15,7 +15,7 @@
             <br>
             <br>
             <p>주소: {{ object.address }}</p>
-            <p>city: {{ object.city }}</p>
+            <p>현재 접속 장소: {{ object.city }}</p>
 
             <a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
         </div>
@@ -59,8 +59,8 @@
 // Initialize and add the map
 function initMap() {
   // The location of Uluru
-  var uluru = {lat: 37.511571, lng: 127.028461};
-  var uluru2 = {lat: 37.521570, lng: 127.048460};
+  var uluru = { {{ coordinates }} };
+  // var uluru2 = {lat: 37.521570, lng: 127.048460};
   // The map, centered at Uluru
   var map = new google.maps.Map(
       document.getElementById('map'), {zoom: 15, center: uluru});
@@ -68,7 +68,7 @@ function initMap() {
 
 
     var marker = new google.maps.Marker({position: uluru, map: map});
-    var marker2 = new google.maps.Marker({position: uluru2, map: map});
+    // var marker2 = new google.maps.Marker({position: uluru2, map: map});
 }
 
 </script>

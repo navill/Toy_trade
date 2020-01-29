@@ -43,7 +43,7 @@ class Action(models.Model):
     object_id = models.PositiveIntegerField(null=True, blank=True, db_index=True)
     # GenericForeignKey에 대한 db는 생성하지 않는다.
     content_object = GenericForeignKey('content_type', 'object_id')
-    check = models.BooleanField(default=True)
+    check = models.BooleanField(default=False)
     
     objects = ActionManager()
 

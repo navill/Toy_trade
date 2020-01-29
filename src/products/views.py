@@ -1,8 +1,11 @@
+import ast
+
 from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
+from location.models import UserSession
 from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
@@ -23,7 +26,7 @@ class ProductCreateView(CreateView):
 
 
 class ProductListView(ListView):
-    queryset = Product.objects.all().with_user()
+    queryset = Product.objects.all().with_user().with_comment()
     template_name = 'products/product_list.html'
     paginate_by = 3
 
@@ -42,11 +45,14 @@ class ProductDetailView(DetailView):
         # 두 모델의 user 정보가 다르기 때문에 각각 select, prefetch 사용
         obj = self.get_object()
         comments = obj.comment_set.all().select_related('user__userprofile')  # comment(id:4,id:5) + user(id:1, id:2)
-
-        # 템플릿에 전달되어야 하는 값: product_obj, comments,
+        # user_session = UserSession.objects.filter(user=request.user).first()
+        # city = ast.literal_eval(user_session.city_data)
+        # print(city['r3'])
+        # 템플릿에 전달되어야 하는 값: product_obj, comments, city
         context = {
             'object': obj,
             'comments': comments,
+            # 'city': city['r3']
         }
         # UserSession.objects.get(session_key=request.session.session_key)
         return render(request, 'products/product_detail.html', context=context)

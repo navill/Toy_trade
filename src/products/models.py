@@ -20,6 +20,9 @@ class ProductQuerySet(models.QuerySet):
     def with_user(self):
         return self.select_related('user')
 
+    def with_comment(self):
+        return self.prefetch_related('comment_set')
+
 
 class ProductManager(models.Manager):
     def get_queryset(self):
@@ -78,7 +81,7 @@ class Comment(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return str(self.product)
+        return str(self.id)
 
 
 def post_save_comment_receiver(sender, instance, created, *args, **kwargs):
