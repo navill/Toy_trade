@@ -82,9 +82,9 @@ class UserProfileDetailView(DetailView):
         user_profile = self.get_object()
         # 내 위치와 동일한 유저의 댓글
         if user_profile.filtered_city:
-            replies = reply_qs.filter(user__userprofile__city=user.userprofile.city)
+            replies = reply_qs.filter(user__userprofile__city=user.userprofile.city)[:5]
         else:
-            replies = reply_qs
+            replies = reply_qs[:5]
         # 프로필 업데이트 정보
         my_info = qs.filter(user=request.user).by_model(UserProfile)[:4]
 
