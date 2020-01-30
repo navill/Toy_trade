@@ -1,5 +1,6 @@
 import ast
 
+from django.http import Http404
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -77,11 +78,30 @@ class CommentCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
+        pk = kwargs.get('pk')
         if form.is_valid():
             data = form.save(commit=False)
             data.user = request.user
             # data.city = 'none'
-            product = Product.objects.get(id=form.data['product'])
+            product = Product.objects.get(id=pk)
             data.product = product
             data.save()
             return redirect(product.get_absolute_url())
+
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    success_url = ''
+
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(CommentDeleteView, self).get_object()
+        if not obj.user == self.request.user:
+            raise Http404
+        return obj
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        comment = obj.product
+        obj.delete()
+        return redirect(comment.get_absolute_url())

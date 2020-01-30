@@ -1,7 +1,8 @@
+
+
 <form method="POST" action="{% url 'products:comment-create' product.id %}">
     {% csrf_token %}
-    <input type='text' name='comment'/>
+    <input type='text' name='comment' style="width: 500px;"/>
     <input type='hidden' name='user' value='{{ request.user }}' />
-    <input type='hidden' name='product' value='{{ product.id }}' />
     <input type="submit" value="Save" class="btn btn-primary">
 </form>
