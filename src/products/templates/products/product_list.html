@@ -6,15 +6,14 @@
 <ul class="list-unstyled">
 	{% for obj in object_list %}
 	<li class="media my-4">
-		<img src="..." class="mr-3" alt="...">
+		<img src=" " class="mr-3">
 		<div>
 			<div class="media-body">
-				<h5 class="mt-0 mb-1"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h5>
-				{% if item.courses_length > 0 %}
-                <span class="badge">{{ obj.courses_length }}
-                Course{% if courses_length > 1 %}s{% endif %}</span>
-                {% endif %}
-				<p><small><b>ID:{{ obj.user }}</b> created: {{ obj.created }} </small></p>
+				<h5 class="mt-0 mb-1"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+					{% if obj.count_comment > 0 %}
+					<span class="badge badge-pill badge-secondary">{{ obj.count_comment }}</span>
+					{% endif %}</h5>
+				<p><small><b>ID:{{ obj.user }} [{{ obj.user.userprofile.city }}]</b> created: {{ obj.created }} </small></p>
 				{{ obj.description }}
 				Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
 				purus odio,
@@ -22,25 +21,10 @@
 				fringilla. Donec
 				lacinia congue felis in faucibus.
 			</div>
-
 		</div>
-	{% endfor %}
+		{% endfor %}
 </ul>
-<div class="row">
-	<div class="col mx-auto">
-		<ul>
-			{% for obj in object_list %}
-			<li>
-				<p>작성자:{{ obj.user }} - <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a> [가격:{{ obj.price }}
-					원](댓글:{{ obj.comment_set.all|length }})
-				</p>
-				<p></p>
-			</li>
-			{% endfor %}
-		</ul>
-		<!--<div class="container">-->
-	</div>
-</div>
+
 <div class="container">
 	<div class="row">
 		<div class="col-5 mx-auto">
@@ -58,6 +42,7 @@
 
 
 					<li class="page-item active" aria-current="page"><a class="page-link" href="#">{{ page_obj.number }}</a>
+
 
 					</li>
 
