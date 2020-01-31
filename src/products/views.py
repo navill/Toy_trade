@@ -1,7 +1,7 @@
 import ast
 
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
@@ -31,6 +31,18 @@ class ProductListView(ListView):
     template_name = 'products/product_list.html'
     paginate_by = 3
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return super().get_context_data(object_list=object_list, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        city = request.GET.get('city')
+        qs = self.get_queryset()
+        if city:
+            qs = qs.filter(city=city)
+
+        context = self.get_context_data(object_list=qs)
+        return render(request, 'products/product_list.html', context=context)
+
 
 class ProductDetailView(DetailView):
     queryset = Product.objects.all()
@@ -48,7 +60,6 @@ class ProductDetailView(DetailView):
         comments = obj.comment_set.all().select_related('user__userprofile')  # comment(id:4,id:5) + user(id:1, id:2)
         # user_session = UserSession.objects.filter(user=request.user).first()
         # city = ast.literal_eval(user_session.city_data)
-        # print(city['r3'])
         # 템플릿에 전달되어야 하는 값: product_obj, comments, city
         context_data = {
             'object': obj,
@@ -78,7 +89,7 @@ class CommentCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        pk = kwargs.get('pk')
+        pk = kwargs.get('pk', None)
         if form.is_valid():
             data = form.save(commit=False)
             data.user = request.user

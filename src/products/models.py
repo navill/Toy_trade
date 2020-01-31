@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import Prefetch
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.urls import reverse
 
 from notification.utils import create_action
@@ -18,7 +18,7 @@ BUY_OR_SELL = (
 
 class ProductQuerySet(models.QuerySet):
     def with_user(self):
-        return self.select_related('user')
+        return self.select_related('user__userprofile')
 
     def with_comment(self):
         return self.prefetch_related('comment_set')
@@ -47,6 +47,7 @@ class Product(models.Model):
     type = models.CharField(choices=BUY_OR_SELL, default='sell', max_length=5)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    city = models.CharField(max_length=20, null=True, blank=True)
 
     objects = ProductManager()
 
@@ -59,6 +60,14 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('products:detail', kwargs={'pk': self.id})
 
+    def count_comment(self):
+        comments = self.comment_set.all()
+        return len(comments)
+
+
+def pre_save_product_receiver(sender, instance, *args, **kwargs):
+    instance.city = instance.user.userprofile.city
+
 
 def post_save_product_receiver(sender, instance, created, *args, **kwargs):
     user = instance.user
@@ -66,6 +75,7 @@ def post_save_product_receiver(sender, instance, created, *args, **kwargs):
     create_action(user=user, verb=message, obj=instance)
 
 
+pre_save.connect(pre_save_product_receiver, sender=Product)
 post_save.connect(post_save_product_receiver, sender=Product)
 
 

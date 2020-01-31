@@ -27,7 +27,7 @@ class UserSession(models.Model):
         return str(self.user.username)
 
 
-# 유저 로그인 시 signal 발생 -> session 생성
+# 유저 로그인 시 signal(signals.py:user_logged_in(request)) 발생 -> session 생성
 def user_logged_in_receiver(sender, request, *args, **kwargs):
     user = request.user
     ip_address = get_client_ip()
@@ -49,10 +49,11 @@ def user_logged_in_receiver(sender, request, *args, **kwargs):
             city = '주소를 알 수 없습니다.'
 
     # public ip-address 수집 -> city data 수집 -> UserSession 생성
-    usersession, created = UserSession.objects.get_or_create(user=user, ip_address=ip_address,
-                                                             country=city_data['country'],
-                                                             city_data=city_data,
-                                                             city=city,
-                                                             )
+    UserSession.objects.get_or_create(user=user, ip_address=ip_address,
+                                      country=city_data['country'],
+                                      city_data=city_data,
+                                      city=city,
+                                      )
+
 
 user_logged_in.connect(user_logged_in_receiver)
