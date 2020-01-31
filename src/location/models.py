@@ -55,5 +55,4 @@ def user_logged_in_receiver(sender, request, *args, **kwargs):
                                                              city=city,
                                                              )
 
-
 user_logged_in.connect(user_logged_in_receiver)

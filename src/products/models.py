@@ -84,13 +84,13 @@ class Comment(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('products:detail', kwargs={'pk': self.product.id})
+        return reverse('products:detail', kwargs={'pk': self.product_id})
 
 
 def post_save_comment_receiver(sender, instance, created, *args, **kwargs):
     user = instance.user
     message = f'{user}가 게시물{instance.product}에 대한 댓글을 작성하였습니다'
-    create_action(user, message, instance)
+    create_action(user, message, obj=instance, target_user=instance.product.user)
 
 
 post_save.connect(post_save_comment_receiver, sender=Comment)

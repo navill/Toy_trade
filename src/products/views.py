@@ -50,13 +50,13 @@ class ProductDetailView(DetailView):
         # city = ast.literal_eval(user_session.city_data)
         # print(city['r3'])
         # 템플릿에 전달되어야 하는 값: product_obj, comments, city
-        context = {
+        context_data = {
             'object': obj,
             'comments': comments,
             # 'city': city['r3']
         }
         # UserSession.objects.get(session_key=request.session.session_key)
-        return render(request, 'products/product_detail.html', context=context)
+        return render(request, 'products/product_detail.html', context=context_data)
 
 
 class ProductUpdateView(UpdateView):

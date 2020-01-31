@@ -34,11 +34,11 @@
 					Notification
 				</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown" style="text-align: center;">
-					{% if comment_actions %}
+					{% if action_qs %}
 					<form action="." method="post">
 						{% csrf_token %}
-						{% for action in comment_actions %}
-						<a class="dropdown-item" href="{{ action.get_absolute_url }}"><small>{{ action.verb | safe }}</small></a>
+						{% for action in action_qs %}
+						<a class="dropdown-item" href="{{ action.get_absolute_url }}"><small>{{ action.verb }}</small></a>
                         <div class="dropdown-divider"></div>
 						{% endfor %}
 						<input type='hidden' name='check' value='True'/>

@@ -7,7 +7,7 @@ from .models import Action
 
 
 # action 생성
-def create_action(user, verb, obj=None):
+def create_action(user, verb, obj=None, target_user=None):
     now = timezone.now()
     # 반복 동작은 1분으로 제한
     last_minute = now - datetime.timedelta(seconds=60)
@@ -17,7 +17,7 @@ def create_action(user, verb, obj=None):
         content_type = ContentType.objects.get_for_model(obj)
         similar_actions = similar_actions.filter(content_type=content_type, object_id=obj.id)
     if not similar_actions:
-        action = Action(user=user, verb=verb, content_object=obj)
+        action = Action(user=user, target_user=target_user, verb=verb, content_object=obj)
         action.save()
         return True
     return False

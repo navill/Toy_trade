@@ -32,10 +32,10 @@ class UserProfile(models.Model):
         return str(self.user)
 
 
-def post_save_profile_receiver(sender, instance, created, *args, **kwargs):
-    user = instance.user
-    message = '내 profile 이 업데이트 되었습니다.'
-    create_action(user, message, instance)
-
-
-post_save.connect(post_save_profile_receiver, sender=UserProfile)
+# def post_save_profile_receiver(sender, instance, created, *args, **kwargs):
+#     user = instance.user
+#     message = '내 profile 이 업데이트 되었습니다.'
+#     create_action(user, message, obj=instance)
+#
+#
+# post_save.connect(post_save_profile_receiver, sender=UserProfile)

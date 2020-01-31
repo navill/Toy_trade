@@ -2,6 +2,30 @@
 
 
 {% block content %}
+
+<ul class="list-unstyled">
+	{% for obj in object_list %}
+	<li class="media my-4">
+		<img src="..." class="mr-3" alt="...">
+		<div>
+			<div class="media-body">
+				<h5 class="mt-0 mb-1"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h5>
+				{% if item.courses_length > 0 %}
+                <span class="badge">{{ obj.courses_length }}
+                Course{% if courses_length > 1 %}s{% endif %}</span>
+                {% endif %}
+				<p><small><b>ID:{{ obj.user }}</b> created: {{ obj.created }} </small></p>
+				{{ obj.description }}
+				Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+				purus odio,
+				vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate
+				fringilla. Donec
+				lacinia congue felis in faucibus.
+			</div>
+
+		</div>
+	{% endfor %}
+</ul>
 <div class="row">
 	<div class="col mx-auto">
 		<ul>
