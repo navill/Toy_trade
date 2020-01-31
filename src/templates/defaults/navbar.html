@@ -14,7 +14,7 @@
 
 			{% if request.user.is_authenticated %}
 			<li class="nav-item">
-				<a class="nav-link" href="{% url 'accounts:detail' request.user %}">Profile</a>
+				<a class="nav-link" href="{% url 'accounts:detail' request.user %}">Profile[{{ request.user }}]</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'logout' %}">Logout</a>
