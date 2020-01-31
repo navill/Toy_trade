@@ -21,11 +21,12 @@ from products.models import Comment
 
 class Home(View):
     def get_comment_action(self, request):
-        action_qs = Action.objects.filter(check=False)
-
         user = request.user
+        action_qs = Action.objects.filter(Q(check=False) & Q(user=user))
+
         comments = Comment.objects.exclude(user=user).filter(product__user=user)
         ids = [c.id for c in comments]
+
         # 앞에서 필터링된 모든 Comment의 Action
         comment_actions = action_qs.by_model(Comment)
         comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
@@ -48,7 +49,6 @@ class Home(View):
         comment_actions = self.get_comment_action(request)
         if is_checked:
             for action in comment_actions:
-                print(action.check)
                 action.check = True
             Action.objects.bulk_update(comment_actions, ['check'])
         return redirect('home')
