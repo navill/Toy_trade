@@ -1,8 +1,8 @@
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.db import models
 
 # Create your models here.
-from django.db.models import Prefetch
 from django.db.models.signals import post_save, pre_save
 from django.urls import reverse
 
@@ -64,12 +64,26 @@ class Product(models.Model):
         comments = self.comment_set.all()
         return len(comments)
 
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+    #     if self.id is not None:
+    #         image = Image.open(self.image.path)
+    #         print(image)
+    #         image = image.resize((500, 350), Image.ANTIALIAS)
+    #         image.save(self.image.path)
+
 
 def pre_save_product_receiver(sender, instance, *args, **kwargs):
     instance.city = instance.user.userprofile.city
 
 
 def post_save_product_receiver(sender, instance, created, *args, **kwargs):
+    # image size 조절 
+    image = Image.open(instance.image.path)
+    # print(image)
+    image = image.resize((500, 300), Image.ANTIALIAS)
+    image.save(instance.image.path)
+    
     user = instance.user
     message = f'{user}가 게시물을 작성하였습니다 - {instance.title}'
     create_action(user=user, verb=message, obj=instance)

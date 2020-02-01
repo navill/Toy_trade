@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'debug_toolbar',
-
+    'sorl.thumbnail',
     # 'storages',
 
     # apps
@@ -223,7 +223,7 @@ VENV_PATH = os.path.dirname(BASE_DIR)
 
 # # collectstatic 실행 시 아래의 STATIC_ROOT 폴더에 static 파일들이 저장된다.
 
-if not DEBUG:
+if DEBUG:
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
     STATICFILES_DIRS = [

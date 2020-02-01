@@ -53,5 +53,5 @@ class Action(models.Model):
         # 구현에 따라 조건문 필요 + query 정리
         # userprofile -> url: /<username>
         # product(14), comment(15) -> url: /detail/<id>
-        print(self.content_type)
+        # print(self.content_type)
         return self.content_object.get_absolute_url()

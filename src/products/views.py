@@ -35,12 +35,13 @@ class ProductListView(ListView):
         return super().get_context_data(object_list=object_list, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        city = request.GET.get('city')
+        city = kwargs.get('city')
         qs = self.get_queryset()
         if city:
             qs = qs.filter(city=city)
 
         context = self.get_context_data(object_list=qs)
+        context['city'] = city
         return render(request, 'products/product_list.html', context=context)
 
 
