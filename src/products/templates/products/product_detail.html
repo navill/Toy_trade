@@ -29,7 +29,7 @@
 	</div>
 </div>
 <div class="col-12">
-	<ul id='anyClass' class="nav nav-pills nav-stacked">
+	<ul id='anyClass' class="nav nav-pills nav-stacked" style="height: 200px;">
 		<li class="nav-item">
 			{% with request.user as user%}
 			{% for comment in comments %}
@@ -52,6 +52,5 @@
 		</li>
 	</ul>
 </div>
-
 
 {% endblock %}
