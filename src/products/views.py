@@ -1,12 +1,11 @@
 import ast
 
 from django.http import Http404
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
-from location.models import UserSession
 from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
@@ -19,9 +18,12 @@ class ProductCreateView(CreateView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         user = request.user
+        session = request.session
         if form.is_valid():
             data = form.save(commit=False)
             data.user = user
+            data.city = session['city']
+            data.ip_address = session['ip_address']
             data.save()
             return redirect(data.get_absolute_url())
 
@@ -36,9 +38,12 @@ class ProductListView(ListView):
 
     def get(self, request, *args, **kwargs):
         city = kwargs.get('city')
+        q = request.GET.get('q')
         qs = self.get_queryset()
         if city:
             qs = qs.filter(city=city)
+        if q:
+            qs = qs.filter(title__icontains=q)
 
         context = self.get_context_data(object_list=qs)
         context['city'] = city

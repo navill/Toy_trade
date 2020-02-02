@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.urls import reverse
 
+from location.models import UserSession
 from notification.utils import create_action
 
 User = get_user_model()
@@ -47,7 +48,9 @@ class Product(models.Model):
     type = models.CharField(choices=BUY_OR_SELL, default='sell', max_length=5)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    # filtering을 위해 city&ip_address 추가
     city = models.CharField(max_length=20, null=True, blank=True)
+    ip_address = models.CharField(max_length=20, blank=True, null=True)
 
     objects = ProductManager()
 
@@ -64,26 +67,21 @@ class Product(models.Model):
         comments = self.comment_set.all()
         return len(comments)
 
-    # def save(self, force_insert=False, force_update=False, using=None,
-    #          update_fields=None):
-    #     if self.id is not None:
-    #         image = Image.open(self.image.path)
-    #         print(image)
-    #         image = image.resize((500, 350), Image.ANTIALIAS)
-    #         image.save(self.image.path)
-
 
 def pre_save_product_receiver(sender, instance, *args, **kwargs):
-    instance.city = instance.user.userprofile.city
+    user_profile = instance.user.userprofile
+    instance.city = user_profile.city
+    instance.ip_address = user_profile.ip_address
 
 
 def post_save_product_receiver(sender, instance, created, *args, **kwargs):
     # image size 조절 
-    image = Image.open(instance.image.path)
-    # print(image)
-    image = image.resize((500, 300), Image.ANTIALIAS)
-    image.save(instance.image.path)
-    
+    if instance.image:
+        image = Image.open(instance.image.path)
+        # print(image)
+        image = image.resize((400, 300), Image.ANTIALIAS)
+        image.save(instance.image.path)
+
     user = instance.user
     message = f'{user}가 게시물을 작성하였습니다 - {instance.title}'
     create_action(user=user, verb=message, obj=instance)

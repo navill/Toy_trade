@@ -2,20 +2,21 @@
 {% load thumbnail %}
 
 {% block content %}
+{% if city %}
+	<h5><b>[{{ city }}]</b></h5>
+{% endif %}
 <div class="row">
-	<div class="col mx-auto">
+	<div class="col">
 		<ul class="list-unstyled">
+
 			{% for obj in object_list %}
 			<li class="media my-4">
 				<div>
 					<div class="media-body">
 						<div class="row">
-						<div class="col-2">
+						<div class="col-2 ml-5">
 						{% if obj.image %}
-						{% thumbnail obj.image "130x120" crop="center" as im %}
-                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="mr-3">
-						{% endthumbnail %}
-
+                        <img src="{{ obj.image.url }}" width="130 px;" height="120 px;" class="mr-3">
 						{% endif %}
 						</div>
 						<div class="col-8">

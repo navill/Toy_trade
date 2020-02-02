@@ -80,7 +80,6 @@ class UserProfileDetailView(DetailView):
         qs = Action.objects.all()
 
         # 내 게시글에 대해 누군가가 댓글 등록
-
         reply_qs = qs.exclude(user=user).by_model(Comment, model_queryset=True).select_related('product').filter(
             product__user=user)
 
@@ -94,7 +93,7 @@ class UserProfileDetailView(DetailView):
 
         # 내 위치 정보
         ip = get_client_ip()
-        user_session = UserSession.objects.filter(Q(user=user) & Q(ip_address=ip)).first()
+        user_session = UserProfile.objects.filter(Q(user=user) & Q(ip_address=ip)).first()
         coord = ast.literal_eval(user_session.city_data)
         lat = coord['lat']
         lng = coord['long']

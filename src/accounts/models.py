@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-# Create your models here.
-from django.db.models.signals import post_save
-
-from config import settings
-from notification.utils import create_action
+from location.naver_geolocation import get_address
+from location.signals import user_logged_in
+from location.utils import get_client_ip
 
 User = get_user_model()
 
@@ -25,17 +23,37 @@ class UserProfile(models.Model):
     filtered_city = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    geo_address = models.TextField(blank=True, null=True)
+
     objects = UserProfileManager()
 
     def __str__(self):
         return str(self.user)
 
 
-# def post_save_profile_receiver(sender, instance, created, *args, **kwargs):
-#     user = instance.user
-#     message = '내 profile 이 업데이트 되었습니다.'
-#     create_action(user, message, obj=instance)
-#
-#
-# post_save.connect(post_save_profile_receiver, sender=UserProfile)
+# 유저 로그인 시 signal(signals.py:user_logged_in(request))
+def user_logged_in_receiver(sender, request, *args, **kwargs):
+    user = request.user
+    ip_address = get_client_ip()
+    session = request.session
+    if ip_address:
+        user_profile, created = UserProfile.objects.get_or_create(user=user)
+        try:
+            geo_address = get_address(ip_address)
+            # city = str(city_data['r2']) + ' ' + str(city_data['r3'])
+            city = str(geo_address['r3'])
+            user_profile.city = city
+            user_profile.geo_address = geo_address
+            session['city'] = city
+            session['geo_address'] = geo_address
+            session['ip_address'] = ip_address
+            
+            user_profile.save()
+        except:
+            user_profile.city_data = '주소를 알 수 없습니다.'
+            user_profile.city = '주소를 알 수 없습니다.'
+            user_profile.save()
+
+
+user_logged_in.connect(user_logged_in_receiver)

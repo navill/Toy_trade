@@ -1,20 +1,20 @@
 {% if request.user.is_authenticated %}
+
 <nav class="navbar navbar-expand-lg fixed-top navbar-light" style="background-color: #e3f2fd;">
-	<a class="navbar-brand" href="{% url 'home' %}">Home</a>
+	<div class="row mx-auto">
+		{% if request.user.is_authenticated %}
+	<a class="navbar-brand" href="{% url 'home' %}">Welcom <b>{{ request.user }}</b>!!</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
 	        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
 	<div class="collapse navbar-collapse" id="navbarNavDropdown">
 		<ul class="navbar-nav">
-
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'products:list' %}">Products</a>
 			</li>
-
-			{% if request.user.is_authenticated %}
 			<li class="nav-item">
-				<a class="nav-link" href="{% url 'accounts:detail' request.user %}">Profile[{{ request.user }}]</a>
+				<a class="nav-link" href="{% url 'accounts:detail' request.user %}">Profile</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -29,7 +29,8 @@
 			{% endif %}
 
 			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+				   data-toggle="dropdown"
 				   aria-haspopup="true" aria-expanded="false">
 					Notification
 				</a>
@@ -39,18 +40,23 @@
 						{% csrf_token %}
 						{% for action in action_qs %}
 						<a class="dropdown-item" href="{{ action.get_absolute_url }}"><small>{{ action.verb }}</small></a>
-                        <div class="dropdown-divider"></div>
+						<div class="dropdown-divider"></div>
 						{% endfor %}
 						<input type='hidden' name='check' value='True'/>
 						<input type="submit" value="확인" class="btn btn-primary">
 					</form>
-
 					{% else %}
 					<p>새로운 알림이 없습니다.</p>
 					{% endif %}
 				</div>
 			</li>
 		</ul>
+		</div>
+
+		<form class="form-inline mt-2 mt-md-0" action="{% url 'products:list' %}" method="GET">
+			<input class="form-control mr-sm-2" value="{{ request.GET.q }}" name="q" placeholder="Search" aria-label="Search">
+			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		</form>
 	</div>
 </nav>
 {% endif %}

@@ -1,6 +1,6 @@
 {% extends "home.html" %}
 {% load crispy_forms_tags %}
-
+{% load humanize %}
 {% block content %}
 <style>
 #anyClass {
@@ -9,26 +9,39 @@
 }
 
 </style>
+<br><br>
+<div class="card mb-3" style="max-width: 890px;">
+  <div class="row no-gutters">
+    <div class="col-md-6">
+	    {% if object.image %}
+		<img src="{{ object.image.url }}">
+	    {% endif %}
+	</div>
+    <div class="col-md-6">
+      <div class="card-body">
+        <h5 class="card-title">{{ object.title }}</h5>
+	      <p><small>작성자: {{ object.user }}</small></p>
+	      <p><small>{{ object.price | intcomma }}원</small></p>
+        <p class="card-text">{{ object.description }}</p>
+        <p class="card-text"><small class="text-muted">{{ object.created }}</small></p>
+      </div>
+    </div>
+  </div>
+</div>
 
-
-<p>{{ object.user }}</p>
-<p>{{ object.title }}</p>
-<p>{{ object.price }}</p>
-<p>{{ object.description }}</p>
-
-
-{% if object.image %}
-<img src="{{ object.image.url }}">
+{% if request.user == object.user %}
+<p>delete</p>
+<p>update</p>
 {% endif %}
 
-<br><br><br><br>
+<br><br>
 
 <div class="row">
-	<div class="col mx-auto">
+	<div class="col-8 mx-auto">
 		{% include 'products/comments/comment_form.html' with product=object %}
 	</div>
 </div>
-<div class="col-12">
+<div class="col-8 mx-auto">
 	<ul id='anyClass' class="nav nav-pills nav-stacked" style="height: 200px;">
 		<li class="nav-item">
 			{% with request.user as user%}
@@ -37,13 +50,13 @@
 				{{ comment.user}} - {{ comment.comment }}({{ comment.created }} - {{ comment.user.userprofile.city }})
 				&nbsp;&nbsp;
 				{% if user.is_authenticated %}
-				{% if user == comment.user%}
-				<form action="{% url 'products:comment-delete' comment.id %}" method="post">
-					{% csrf_token %}
-                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
-					<input type="submit" value="delete" class="btn btn-warning btn-sm">
-				</form>
-				{% endif %}
+					{% if user == comment.user%}
+					<form action="{% url 'products:comment-delete' comment.id %}" method="post">
+						{% csrf_token %}
+	                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+						<input type="submit" value="delete" class="btn btn-warning btn-sm">
+					</form>
+					{% endif %}
 				{% endif %}
 			</div>
 
