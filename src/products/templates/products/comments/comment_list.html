@@ -1,6 +1,6 @@
 {% block content %}
 {% for obj in product %}
-    <p>{{ obj }}</p>
+    <p>{{ obj }} <small>{{ obj.distance }}</small></p>
 {% endfor %}
 {% endblock %}
 

@@ -47,7 +47,9 @@
 			{% with request.user as user%}
 			{% for comment in comments %}
 			<div class="row my-2 ml-1">
-				{{ comment.user}} - {{ comment.comment }}({{ comment.created }} - {{ comment.user.userprofile.city }})
+				<p>{{ comment.user}}: {{ comment.comment }}</p>&nbsp;
+				<p><small><b>({{ comment.created }} - {{ comment.city }} {{ comment.distance }}</b></small>)</p>
+
 				&nbsp;&nbsp;
 				{% if user.is_authenticated %}
 					{% if user == comment.user%}

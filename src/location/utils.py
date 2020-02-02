@@ -8,16 +8,7 @@ def get_client_ip():
     # test ip_address - 논현동
     ip_address = '27.1.175.30'
 
-    ip = requests.get('https://api.ip.pe.kr/json/')
-    ip = json.loads(ip.text)['ip']
+    # ip = requests.get('https://api.ip.pe.kr/json/')
+    # ip = json.loads(ip.text)['ip']
 
     return ip_address  # 논현동
-
-
-# def get_client_city_data(ip_address):
-#     # public ip 획득
-#     user_address = get_address(ip_address)
-#     return user_address
-
-
-# print(get_client_ip())

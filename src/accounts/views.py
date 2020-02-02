@@ -16,40 +16,37 @@ from accounts.models import UserProfile
 from location.signals import user_logged_in
 from location.utils import get_client_ip
 from notification.models import Action
+from notification.utils import get_comment_action
 from products.models import Comment
 
 
 class Home(View):
-    def get_comment_action(self, request):
-        user = request.user
-        action_qs = Action.objects.filter(check=False)
-
-        comments = Comment.objects.exclude(user=user).filter(product__user=user)
-        ids = [c.id for c in comments]
-
-        a = ContentType.objects.get_for_model(UserProfile)
-
-        # 앞에서 필터링된 모든 Comment의 Action
-        comment_actions = action_qs.prefetch_related('content_object').by_model(Comment)
-        comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
-
-        return comment_actions
+    # def get_comment_action(self, request):
+    #     user = request.user
+    #     action_qs = Action.objects.filter(check=False)
+    #     # 내가 쓴 글(product) + 내가 쓴 댓글(comment)은 제외
+    #     comments = Comment.objects.exclude(user=user).filter(product__user=user)
+    #     if user.userprofile.filtered_city:
+    #         comments = comments.filter(city=user.userprofile.city)
+    #
+    #     ids = [c.id for c in comments]
+    #     print(ids)
+    #     # 앞에서 필터링된 모든 Comment의 Action
+    #     comment_actions = action_qs.prefetch_related('content_object').by_model(Comment)
+    #     comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
+    #
+    #     return comment_actions
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            # 내 게시글에 대해 누군가가 댓글 작성 시 알림
-            comment_actions = self.get_comment_action(request)
-            context_data = {
-                'comment_actions': comment_actions,
-            }
-            return render(request, 'home.html', context_data)
+            return render(request, 'home.html')
         else:
             return redirect('login')
 
     def post(self, request, *args, **kwargs):
         # 알림 확인 -> 알림 지우기
         is_checked = request.POST.get('check')
-        comment_actions = self.get_comment_action(request)
+        comment_actions = get_comment_action(request, comment=Comment)
         if is_checked:
             for action in comment_actions:
                 action.check = True
@@ -84,7 +81,7 @@ class UserProfileDetailView(DetailView):
 
         # 내 위치와 동일한 유저의 댓글
         if user_profile.filtered_city:
-            replies = reply_qs.filter(user__userprofile__city=user.userprofile.city)[:5]
+            replies = reply_qs.filter(city=user.userprofile.city)[:5]
         else:
             replies = reply_qs[:5]
         # 프로필 업데이트 정보

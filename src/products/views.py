@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 
+from location.naver_geolocation import google_distance_matrix
 from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
@@ -14,8 +15,8 @@ def set_object_location(request, data, save=False):
     data.city = session['city']
     lat = session['geo_address']['lat']
     lng = session['geo_address']['long']
-    data.latlng = str(lat)+','+str(lng)
-    print(data.latlng)
+    # comment & product object에 현재 위치의 좌표 저장
+    data.latlng = str(lat) + ',' + str(lng)
     if save:
         data.save()
 
@@ -103,7 +104,11 @@ class CommentCreateView(CreateView):
             product = Product.objects.get(id=pk)
             data = form.save(commit=False)
             data.product = product
+            # comment obj에 위치 정보 저장
             set_object_location(request, data)
+            # product-comment의 거리 측정
+            distance = google_distance_matrix(org_coord=product.latlng, des_coord=data.latlng)
+            data.distance = distance[data.latlng]['distance']['text']
             data.save()
             return redirect(product.get_absolute_url())
 
