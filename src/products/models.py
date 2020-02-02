@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.urls import reverse
 
-from location.models import UserSession
 from notification.utils import create_action
 
 User = get_user_model()
@@ -68,26 +67,21 @@ class Product(models.Model):
         return len(comments)
 
 
-def pre_save_product_receiver(sender, instance, *args, **kwargs):
-    user_profile = instance.user.userprofile
-    instance.city = user_profile.city
-    instance.ip_address = user_profile.ip_address
-
-
 def post_save_product_receiver(sender, instance, created, *args, **kwargs):
     # image size 조절 
     if instance.image:
+        # 또는 with Image.open(instance.image.path) as image:
         image = Image.open(instance.image.path)
         # print(image)
         image = image.resize((400, 300), Image.ANTIALIAS)
         image.save(instance.image.path)
+        image.close()
 
     user = instance.user
     message = f'{user}가 게시물을 작성하였습니다 - {instance.title}'
     create_action(user=user, verb=message, obj=instance)
 
 
-pre_save.connect(pre_save_product_receiver, sender=Product)
 post_save.connect(post_save_product_receiver, sender=Product)
 
 
@@ -98,6 +92,8 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', related_name='reply', null=True, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    city = models.CharField(max_length=20, null=True, blank=True)
+    ip_address = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         ordering = ['-created']

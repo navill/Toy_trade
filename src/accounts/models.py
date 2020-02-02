@@ -45,10 +45,10 @@ def user_logged_in_receiver(sender, request, *args, **kwargs):
             city = str(geo_address['r3'])
             user_profile.city = city
             user_profile.geo_address = geo_address
+            # session에 city, geolocaion 결과 ,ip 주소 저장 -> 제품&댓글 생성 시 사용 
             session['city'] = city
             session['geo_address'] = geo_address
             session['ip_address'] = ip_address
-            
             user_profile.save()
         except:
             user_profile.city_data = '주소를 알 수 없습니다.'

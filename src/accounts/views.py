@@ -12,7 +12,6 @@ from django.views.generic.base import View
 
 from accounts.forms import UserProfileForm, LoginForm
 from accounts.models import UserProfile
-from location.models import UserSession
 
 from location.signals import user_logged_in
 from location.utils import get_client_ip
@@ -93,10 +92,9 @@ class UserProfileDetailView(DetailView):
 
         # 내 위치 정보
         ip = get_client_ip()
-        user_session = UserProfile.objects.filter(Q(user=user) & Q(ip_address=ip)).first()
-        coord = ast.literal_eval(user_session.city_data)
-        lat = coord['lat']
-        lng = coord['long']
+        user_session = request.session['geo_address']
+        lat = user_session['lat']
+        lng = user_session['long']
 
         coordinates = f'lat: {lat}, lng: {lng}'
         context = {

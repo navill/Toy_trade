@@ -10,6 +10,15 @@ from products.forms import ProductForm, CommentForm
 from products.models import Product, Comment
 
 
+def set_object_location(request, data, save=False):
+    geo_address = request.session
+    data.user = request.user
+    data.city = geo_address['city']
+    data.ip_address = geo_address['ip_address']
+    if save:
+        data.save()
+
+
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
@@ -17,14 +26,9 @@ class ProductCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        user = request.user
-        session = request.session
         if form.is_valid():
             data = form.save(commit=False)
-            data.user = user
-            data.city = session['city']
-            data.ip_address = session['ip_address']
-            data.save()
+            set_object_location(request, data, save=True)
             return redirect(data.get_absolute_url())
 
 
@@ -66,13 +70,11 @@ class ProductDetailView(DetailView):
         comments = obj.comment_set.all().select_related('user__userprofile')  # comment(id:4,id:5) + user(id:1, id:2)
         # user_session = UserSession.objects.filter(user=request.user).first()
         # city = ast.literal_eval(user_session.city_data)
-        # 템플릿에 전달되어야 하는 값: product_obj, comments, city
+        # 템플릿에 전달되어야 하는 값: product_obj, comments
         context_data = {
             'object': obj,
             'comments': comments,
-            # 'city': city['r3']
         }
-        # UserSession.objects.get(session_key=request.session.session_key)
         return render(request, 'products/product_detail.html', context=context_data)
 
 
@@ -97,11 +99,10 @@ class CommentCreateView(CreateView):
         form = self.get_form()
         pk = kwargs.get('pk', None)
         if form.is_valid():
-            data = form.save(commit=False)
-            data.user = request.user
-            # data.city = 'none'
             product = Product.objects.get(id=pk)
+            data = form.save(commit=False)
             data.product = product
+            set_object_location(request, data)
             data.save()
             return redirect(product.get_absolute_url())
 
@@ -111,7 +112,6 @@ class CommentDeleteView(DeleteView):
     success_url = ''
 
     def get_object(self, queryset=None):
-        """ Hook to ensure object is owned by request.user. """
         obj = super(CommentDeleteView, self).get_object()
         if not obj.user == self.request.user:
             raise Http404
