@@ -1,5 +1,3 @@
-import ast
-
 from django.http import Http404
 from django.shortcuts import render, redirect
 
@@ -11,10 +9,13 @@ from products.models import Product, Comment
 
 
 def set_object_location(request, data, save=False):
-    geo_address = request.session
+    session = request.session
     data.user = request.user
-    data.city = geo_address['city']
-    data.ip_address = geo_address['ip_address']
+    data.city = session['city']
+    lat = session['geo_address']['lat']
+    lng = session['geo_address']['long']
+    data.latlng = str(lat)+','+str(lng)
+    print(data.latlng)
     if save:
         data.save()
 

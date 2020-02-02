@@ -49,8 +49,8 @@ class Product(models.Model):
     updated = models.DateTimeField(auto_now=True)
     # filtering을 위해 city&ip_address 추가
     city = models.CharField(max_length=20, null=True, blank=True)
-    ip_address = models.CharField(max_length=20, blank=True, null=True)
-
+    latlng = models.CharField(max_length=20, blank=True, null=True)
+    
     objects = ProductManager()
 
     class Meta:
@@ -93,7 +93,7 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     city = models.CharField(max_length=20, null=True, blank=True)
-    ip_address = models.CharField(max_length=20, blank=True, null=True)
+    latlng = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         ordering = ['-created']
