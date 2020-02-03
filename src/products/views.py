@@ -13,10 +13,9 @@ def set_object_location(request, data, save=False):
     session = request.session
     data.user = request.user
     data.city = session['city']
-    lat = session['geo_address']['lat']
-    lng = session['geo_address']['long']
+    data.lat = session['geo_address']['lat']
+    data.lng = session['geo_address']['long']
     # comment & product object에 현재 위치의 좌표 저장
-    data.latlng = str(lat) + ',' + str(lng)
     if save:
         data.save()
 

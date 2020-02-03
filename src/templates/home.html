@@ -1,23 +1,10 @@
 {% extends "project_base.html" %}
-<style>
-  #map {
-    height: 400px;
-    width: 100%;
-    }
-
-  #map2 {
-    height: 400px;  /* The height is 400 pixels */
-    width: 100%;  /* The width is the width of the web page */
-   }
-
-</style>
 {% block content %}
 
 <div class="container">
 	<div class="row">
 		<div class="col-6 mx-auto">
 			{{ request.user }}
-
 			<form method='post' action="{% url 'logout' %}">
 				{% csrf_token %}
 				<button class="btn btn-warning" type="submit">Logout</button>
@@ -25,32 +12,54 @@
 			<a href="{% url 'login' %}">login</a>
 		</div>
 	</div>
+<div class="row">
+	<h3>동네에서 판매중인 제품</h3>
+	<div id="map" class="gmap">
+	</div>
 </div>
 
-<h3>My Google Maps Demo</h3>
-<!--The div element for the map -->
-<div id="map" class="gmap">
+{% for product in products%}
 
+		<p>lat: {{ product.lat }}</p>
+		<p>lng: {{ product.lng }}</p>
+		<p>title: {{ product.title }}</p>
+
+{% endfor %}
 </div>
 
 <script>
 var locations = [
-	[-25.344, 131.036],
-	[-25.342, 130.036],
-]
+	{% for product in products %}
+		{
+			lat: {{ product.lat }},
+			lng: {{ product.lng }},
+			title: "{{ product.title }}"
+		},
+	{% endfor %}
+];
 var map;
 var markers;
 var infoWindow;
 
 function initMap() {
-	var orig = {lat: -25.344, lng: 131.036};
+	var orig = {lat:{{org_lat}}, lng:{{ org_lng }}};
 	map = new google.maps.Map(
-		document.getElementById('map'), {zoom: 9, center: orig});
+		document.getElementById('map'), {zoom: 13, center: orig});
 		infoWindow = new google.maps.InfoWindow();
-	var marker = new google.maps.Marker({position: orig, map: map});
+	// origin marker
+	marker = new google.maps.Marker({position: orig, map: map});
+	var current = "<b>현재 위치</b><br/>"
+	infoWindow.setContent(current)
+	infoWindow.open(map, marker)
+	google.maps.event.addListener(marker, 'click', function(){
+	        infoWindow.setContent(current)
+	        infoWindow.open(map, marker)
+    });
 
-	function createMaker(latlng, name, address){
-	    var html = "<b>" + name + "</b><br/>" + address
+
+	// create destination marker
+	function createMaker(latlng, name){
+	    // var html = '<a href="' + url + '"><b>' + name + "</b></a><br/>"
 	    var marker = new google.maps.Marker({
 	          position: latlng,
 	          map: map
@@ -58,14 +67,16 @@ function initMap() {
 	    google.maps.event.addListener(marker, 'click', function(){
 	        infoWindow.setContent(html)
 	        infoWindow.open(map, marker)
-	    })
+	    });
 	}
 
 	if (locations.length > 0) {
 	    for(var i = 0; i < locations.length; i++) {
 	        var obj = locations[i]
-	        var latlng = {lat: locations[i][0], lng: locations[i][1]}
-	        createMaker(latlng, obj.name, obj.address)
+	        var latlng = {lat: obj.lat, lng: obj.lng}
+	        var name = obj.title
+	        // var url = {{ obj.get_absolute_url }}
+	        createMaker(latlng, name)
 	    }
 	}
 }
