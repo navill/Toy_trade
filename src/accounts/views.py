@@ -21,22 +21,6 @@ from products.models import Comment
 
 
 class Home(View):
-    # def get_comment_action(self, request):
-    #     user = request.user
-    #     action_qs = Action.objects.filter(check=False)
-    #     # 내가 쓴 글(product) + 내가 쓴 댓글(comment)은 제외
-    #     comments = Comment.objects.exclude(user=user).filter(product__user=user)
-    #     if user.userprofile.filtered_city:
-    #         comments = comments.filter(city=user.userprofile.city)
-    #
-    #     ids = [c.id for c in comments]
-    #     print(ids)
-    #     # 앞에서 필터링된 모든 Comment의 Action
-    #     comment_actions = action_qs.prefetch_related('content_object').by_model(Comment)
-    #     comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
-    #
-    #     return comment_actions
-
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return render(request, 'home.html')

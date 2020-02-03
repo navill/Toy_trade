@@ -32,14 +32,13 @@ def get_comment_action(request, comment=None):
         comments = None
         try:
             comments = comment.objects.exclude(user=user).filter(product__user=user)
-
         except:
             pass
         if user.userprofile.filtered_city:
             comments = comments.filter(city=user.userprofile.city)
-        ids = [c.id for c in comments]
+        comment_ids = comments.values_list('id', flat=True)
         # 앞에서 필터링된 모든 Comment의 Action
         comment_actions = action_qs.prefetch_related('content_object').by_model(comment)
-        comment_actions = comment_actions.filter(object_id__in=ids).order_by('-created')
+        comment_actions = comment_actions.filter(object_id__in=comment_ids).order_by('-created')
 
     return comment_actions
