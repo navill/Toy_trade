@@ -14,13 +14,34 @@ from location.signals import user_logged_in
 from location.utils import get_client_ip
 from notification.models import Action
 from notification.utils import get_comment_action
-from products.models import Comment
+from products.models import Comment, Product
 
 
 class Home(View):
     def get(self, request, *args, **kwargs):
+        """
+            # user_profile.city = 논현1동
+            city = request.session['city']
+            products_info = Product.objects.filter(city=city).values_list('latlng', 'title', flat=True)
+            context = {
+                'products': products_info
+            }
+        """
+        region = request.session['geo_address']['r2']
+        print(region)
+        # products = Product.objects.filter(city=city).values_list('id', 'latlng', 'title', named=True)
+        products = Product.objects.filter(region=region)[:5]
+        # print(products)
+        user_session = request.session['geo_address']
+        lat = user_session['lat']
+        lng = user_session['long']
+        context = {
+            'products': products,
+            'org_lat': lat,
+            'org_lng': lng
+        }
         if request.user.is_authenticated:
-            return render(request, 'home.html')
+            return render(request, 'home.html', context=context)
         else:
             return redirect('login')
 
@@ -69,7 +90,6 @@ class UserProfileDetailView(DetailView):
         info_qs = qs.filter(user=request.user).by_model(UserProfile)[:4]
 
         # 내 위치 정보
-        ip = get_client_ip()
         user_session = request.session['geo_address']
         lat = user_session['lat']
         lng = user_session['long']
