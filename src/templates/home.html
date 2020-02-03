@@ -1,5 +1,16 @@
 {% extends "project_base.html" %}
+<style>
+  #map {
+    height: 400px;
+    width: 100%;
+    }
 
+  #map2 {
+    height: 400px;  /* The height is 400 pixels */
+    width: 100%;  /* The width is the width of the web page */
+   }
+
+</style>
 {% block content %}
 
 <div class="container">
@@ -16,4 +27,47 @@
 	</div>
 </div>
 
+<h3>My Google Maps Demo</h3>
+<!--The div element for the map -->
+<div id="map" class="gmap">
+
+</div>
+
+<script>
+var locations = [
+	[-25.344, 131.036],
+	[-25.342, 130.036],
+]
+var map;
+var markers;
+var infoWindow;
+
+function initMap() {
+	var orig = {lat: -25.344, lng: 131.036};
+	map = new google.maps.Map(
+		document.getElementById('map'), {zoom: 9, center: orig});
+		infoWindow = new google.maps.InfoWindow();
+	var marker = new google.maps.Marker({position: orig, map: map});
+
+	function createMaker(latlng, name, address){
+	    var html = "<b>" + name + "</b><br/>" + address
+	    var marker = new google.maps.Marker({
+	          position: latlng,
+	          map: map
+	        });
+	    google.maps.event.addListener(marker, 'click', function(){
+	        infoWindow.setContent(html)
+	        infoWindow.open(map, marker)
+	    })
+	}
+
+	if (locations.length > 0) {
+	    for(var i = 0; i < locations.length; i++) {
+	        var obj = locations[i]
+	        var latlng = {lat: locations[i][0], lng: locations[i][1]}
+	        createMaker(latlng, obj.name, obj.address)
+	    }
+	}
+}
+    </script>
 {% endblock %}
