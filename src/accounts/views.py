@@ -1,7 +1,4 @@
-import ast
 from django.contrib.auth.views import LoginView as DefaultLoginView, LogoutView as DefaultLogoutView
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect
 
