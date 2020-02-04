@@ -24,7 +24,7 @@
 							{% if obj.count_comment > 0 %}
 							<span class="badge badge-pill badge-secondary">{{ obj.count_comment }}</span>
 							{% endif %}</h5>
-						<p><small><b>ID:{{ obj.user }} <a
+							<p><small><b>ID:{{ obj.user }} <a
 								href="{% url 'products:city-list' obj.user.userprofile.city %}">[{{ obj.user.userprofile.city }}]</a></b> created: {{ obj.created }} </small></p>
 						{{ obj.description }}
 						Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
