@@ -38,15 +38,14 @@ class ProductListView(ListView):
     template_name = 'products/product_list.html'
     paginate_by = 3
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        return super().get_context_data(object_list=object_list, **kwargs)
-
     def get(self, request, *args, **kwargs):
         city = kwargs.get('city')
         q = request.GET.get('q')
         qs = self.get_queryset()
+        # 동(논현, 서초 등..)별로 필터
         if city:
             qs = qs.filter(city=city)
+        # search에 입력된 값을 이용한 필터
         if q:
             qs = qs.filter(title__icontains=q)
 
