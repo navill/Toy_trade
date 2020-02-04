@@ -12,28 +12,22 @@
 			<a href="{% url 'login' %}">login</a>
 		</div>
 	</div>
-<div class="row">
-	<h3>동네에서 판매중인 제품</h3>
-	<div id="map" class="gmap">
+	<div class="row">
+		<h3>동네에서 판매중인 제품</h3>
+		<div id="map" class="gmap">
+		</div>
 	</div>
-</div>
-
-{% for product in products%}
-
-		<p>lat: {{ product.lat }}</p>
-		<p>lng: {{ product.lng }}</p>
-		<p>title: {{ product.title }}</p>
-
-{% endfor %}
 </div>
 
 <script>
 var locations = [
 	{% for product in products %}
 		{
+
 			lat: {{ product.lat }},
 			lng: {{ product.lng }},
-			title: "{{ product.title }}"
+			title: "{{ product.title }}",
+			id: {{ product.id }},
 		},
 	{% endfor %}
 ];
@@ -44,7 +38,7 @@ var infoWindow;
 function initMap() {
 	var orig = {lat:{{org_lat}}, lng:{{ org_lng }}};
 	map = new google.maps.Map(
-		document.getElementById('map'), {zoom: 13, center: orig});
+		document.getElementById('map'), {zoom: 14, center: orig});
 		infoWindow = new google.maps.InfoWindow();
 	// origin marker
 	marker = new google.maps.Marker({position: orig, map: map});
@@ -58,8 +52,8 @@ function initMap() {
 
 
 	// create destination marker
-	function createMaker(latlng, name){
-	    // var html = '<a href="' + url + '"><b>' + name + "</b></a><br/>"
+	function createMaker(latlng, name, url){
+	    var html = '<a href=' + url + '><b>' + name + "</b></a><br/>"
 	    var marker = new google.maps.Marker({
 	          position: latlng,
 	          map: map
@@ -75,10 +69,11 @@ function initMap() {
 	        var obj = locations[i]
 	        var latlng = {lat: obj.lat, lng: obj.lng}
 	        var name = obj.title
-	        // var url = {{ obj.get_absolute_url }}
-	        createMaker(latlng, name)
+			var url = "{% url 'products:detail' pk='product_id' %}".replace('product_id', obj.id);
+	        createMaker(latlng, name, url)
 	    }
 	}
 }
-    </script>
+
+</script>
 {% endblock %}
