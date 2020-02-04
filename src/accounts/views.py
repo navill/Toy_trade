@@ -28,9 +28,8 @@ class Home(View):
             }
         """
         region = request.session['geo_address']['r2']
-        print(region)
         # products = Product.objects.filter(city=city).values_list('id', 'latlng', 'title', named=True)
-        products = Product.objects.filter(region=region)[:5]
+        products = Product.objects.filter(region=region)[:4]
         # print(products)
         user_session = request.session['geo_address']
         lat = user_session['lat']
