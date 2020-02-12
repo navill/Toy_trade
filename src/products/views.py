@@ -96,17 +96,22 @@ class CommentCreateView(CreateView):
     form_class = CommentForm
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form()
+        # form = self.get_form()
+        form = CommentForm(data=request.POST)
         pk = kwargs.get('pk', None)
         if form.is_valid():
             product = Product.objects.get(id=pk)
             data = form.save(commit=False)
-            data.product = product
             # comment obj에 위치 정보 저장
             set_object_location(request, data)
+            p_latlng = str(product.lat) + ',' + str(product.lng)
+            c_latlng = str(data.lat) + ',' + str(data.lng)
+            data.product = product
             # product-comment의 거리 측정
-            distance = google_distance_matrix(org_coord=product.latlng, des_coord=data.latlng)
-            data.distance = distance[data.latlng]['distance']['text']
+            distance = google_distance_matrix(org_coord=p_latlng, des_coord=c_latlng)
+            print('distance', distance)
+            data.distance = distance[c_latlng]['distance']['text']
+            print(data.distance)
             data.save()
             return redirect(product.get_absolute_url())
 

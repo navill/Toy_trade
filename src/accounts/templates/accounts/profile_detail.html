@@ -11,7 +11,7 @@
 </style>
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-3">
             <br>
             <br>
             <p>주소: {{ object.address }}</p>
@@ -19,7 +19,7 @@
 
             <a class='btn btn-primary' href="{% url 'accounts:update' object.user %}">Update</a>
         </div>
-        <div class="col-6 col-md-offset-2">
+        <div class="col-5 mx-auto">
             <h1>Notification</h1>
             {% if object.filtered_city %}
             <p>주변 이웃의 댓글 - [{{object.city}}]</p>

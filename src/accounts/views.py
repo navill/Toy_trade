@@ -11,7 +11,6 @@ from accounts.forms import UserProfileForm, LoginForm
 from accounts.models import UserProfile
 
 from location.signals import user_logged_in
-from location.utils import get_client_ip
 from notification.models import Action
 from notification.utils import get_comment_action
 from products.models import Comment, Product
@@ -19,27 +18,19 @@ from products.models import Comment, Product
 
 class Home(View):
     def get(self, request, *args, **kwargs):
-        """
-            # user_profile.city = 논현1동
-            city = request.session['city']
-            products_info = Product.objects.filter(city=city).values_list('latlng', 'title', flat=True)
-            context = {
-                'products': products_info
-            }
-        """
-        region = request.session['geo_address']['r2']
-        # products = Product.objects.filter(city=city).values_list('id', 'latlng', 'title', named=True)
-        products = Product.objects.filter(region=region)[:4]
-        # print(products)
-        user_session = request.session['geo_address']
-        lat = user_session['lat']
-        lng = user_session['long']
-        context = {
-            'products': products,
-            'org_lat': lat,
-            'org_lng': lng
-        }
         if request.user.is_authenticated:
+            region = request.session['geo_address']['r2']
+            # products = Product.objects.filter(city=city).values_list('id', 'latlng', 'title', named=True)
+            products = Product.objects.filter(region=region)[:4]
+            # print(products)
+            user_session = request.session['geo_address']
+            lat = user_session['lat']
+            lng = user_session['long']
+            context = {
+                'products': products,
+                'org_lat': lat,
+                'org_lng': lng
+            }
             return render(request, 'home.html', context=context)
         else:
             return redirect('login')
@@ -81,7 +72,7 @@ class UserProfileDetailView(DetailView):
             product__user=user)
 
         # 내 위치와 동일한 유저의 댓글
-        if user_profile.filtered_city:
+        if user_profile.city_filter:
             replies = reply_qs.filter(city=user.userprofile.city)[:5]
         else:
             replies = reply_qs[:5]

@@ -20,7 +20,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=100, null=True, blank=True)
-    filtered_city = models.BooleanField(default=False)
+    city_filter = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
@@ -41,14 +41,16 @@ def user_logged_in_receiver(sender, request, *args, **kwargs):
         user_profile, created = UserProfile.objects.get_or_create(user=user)
         try:
             geo_address = get_address(ip_address)
+            print('accounts.geo_address', geo_address)
             # city = str(city_data['r2']) + ' ' + str(city_data['r3'])
             city = str(geo_address['r3'])
             user_profile.city = city
             user_profile.geo_address = geo_address
+            user_profile.ip_address = ip_address['ip']
             # session에 city, geolocaion 결과 ,ip 주소 저장 -> 제품&댓글 생성 시 사용 
             session['city'] = city
             session['geo_address'] = geo_address
-            session['ip_address'] = ip_address
+            session['ip_address'] = ip_address['ip']
             user_profile.save()
         except:
             user_profile.city_data = '주소를 알 수 없습니다.'

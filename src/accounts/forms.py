@@ -7,12 +7,12 @@ from accounts.models import UserProfile
 class UserProfileForm(forms.ModelForm):
     address = forms.CharField(max_length=150)
     city = forms.CharField(max_length=150)
-    filtered_city = forms.BooleanField(required=False)
+    city_filter = forms.BooleanField(required=False)
 
     class Meta:
         model = UserProfile
         fields = [
-            'address', 'city', 'filtered_city'
+            'address', 'city', 'city_filter'
         ]
 
 
